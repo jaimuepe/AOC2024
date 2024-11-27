@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Text.Json;
 
 namespace AOC2024;
 
@@ -59,11 +60,11 @@ public abstract class DayBase
 
     private async Task<bool> TryReadInputFromDisk_Async()
     {
-        var filename = $"./Inputs/{_day:00}_Input";
+        var filepath = GetCachedInputFilePath();
 
-        if (File.Exists(filename))
+        if (File.Exists(filepath))
         {
-            _input = await File.ReadAllTextAsync(filename);
+            _input = await File.ReadAllTextAsync(filepath);
             return true;
         }
 
@@ -76,10 +77,11 @@ public abstract class DayBase
 
         try
         {
-            var environment = Environment.GetEnvironmentVariable("NETCORE_ENVIRONMENT");
-            
-            var sessionCookie = new Cookie("session",
-                "53616c7465645f5f26fc2c9b2a1349d184757af2e35352732c26802964886422053d97d9f4788e6f98c3fba00d6ae88ed54a3428eb98acd7e2daebe5c1a6e3f0");
+            var secretsJson = await File.ReadAllTextAsync("./Resources/secrets.json");
+            var secrets = JsonSerializer.Deserialize<Dictionary<string, string>>(secretsJson);
+
+            var session = secrets!.GetValueOrDefault("aoc_session_cookie");
+            var sessionCookie = new Cookie("session", session);
 
             var cookieContainer = new CookieContainer();
             cookieContainer.Add(BaseAddress, sessionCookie);
@@ -95,6 +97,14 @@ public abstract class DayBase
             response.EnsureSuccessStatusCode();
 
             _input = await response.Content.ReadAsStringAsync();
+            
+            var filepath = GetCachedInputFilePath();
+            
+            var file = new FileInfo(filepath);
+            file.Directory!.Create();
+            
+            await File.WriteAllTextAsync(filepath, _input);
+
             return true;
         }
         catch (Exception e)
@@ -105,4 +115,6 @@ public abstract class DayBase
             return false;
         }
     }
+
+    private string GetCachedInputFilePath() => $"./Inputs/Input_{_day:00}.txt";
 }
