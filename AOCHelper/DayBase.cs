@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Text.Json;
 
-namespace AOC2024;
+namespace AOCHelper;
 
 public abstract class DayBase
 {
@@ -15,31 +15,81 @@ public abstract class DayBase
 
     private string? _input;
 
+    protected abstract string TestInput { get; }
+
     protected DayBase(int year, int day)
     {
         _year = year;
         _day = day;
     }
 
-    public async Task SolveA_Async()
+    public DayBase SolveA()
     {
-        Console.WriteLine($"\n--- DAY {_day:00} A ---\n");
-
-        if (!await GetInput_Async()) return;
-        SolveA_Internal(_input!);
+        Task.Run(async () => await SolveA_Async()).Wait();
+        return this;
     }
 
-    public async Task SolveB_Async()
+    public DayBase SolveB()
     {
-        Console.WriteLine($"\n--- DAY {_day:00} B ---\n");
+        Task.Run(async () => await SolveB_Async()).Wait();
+        return this;
+    }
 
-        if (!await GetInput_Async()) return;
-        SolveB_Internal(_input!);
+    public DayBase TestA()
+    {
+        TestA(TestInput);
+        return this;
+    }
+
+    public DayBase TestB()
+    {
+        TestB(TestInput);
+        return this;
+    }
+
+    public DayBase TestA(string testInput)
+    {
+        Console.WriteLine($"\n--- AOC {_year} DAY {_day:00} A (TEST) ---\n");
+
+        SolveA_Internal(testInput);
+        return this;
+    }
+
+    public DayBase TestB(string testInput)
+    {
+        Console.WriteLine($"\n--- AOC {_year} DAY {_day:00} B (TEST) ---\n");
+
+        SolveA_Internal(testInput);
+        return this;
+    }
+
+    public DayBase TestAB(string testInput)
+    {
+        TestA(testInput);
+        TestB(testInput);
+        return this;
     }
 
     protected abstract void SolveA_Internal(string input);
 
     protected abstract void SolveB_Internal(string input);
+
+
+    private async Task SolveA_Async()
+    {
+        Console.WriteLine($"\n--- AOC {_year} DAY {_day:00} A ---\n");
+
+        if (!await GetInput_Async()) return;
+        SolveA_Internal(_input!);
+    }
+
+    private async Task SolveB_Async()
+    {
+        Console.WriteLine($"\n--- AOC {_year} DAY {_day:00} B ---\n");
+
+        if (!await GetInput_Async()) return;
+        SolveB_Internal(_input!);
+    }
 
     private async Task<bool> GetInput_Async()
     {
@@ -97,12 +147,12 @@ public abstract class DayBase
             response.EnsureSuccessStatusCode();
 
             _input = await response.Content.ReadAsStringAsync();
-            
+
             var filepath = GetCachedInputFilePath();
-            
+
             var file = new FileInfo(filepath);
             file.Directory!.Create();
-            
+
             await File.WriteAllTextAsync(filepath, _input);
 
             return true;
@@ -116,5 +166,5 @@ public abstract class DayBase
         }
     }
 
-    private string GetCachedInputFilePath() => $"./Inputs/Input_{_day:00}.txt";
+    private string GetCachedInputFilePath() => $"./Inputs/Input_{_year:0000}_{_day:00}.txt";
 }
