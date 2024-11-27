@@ -77,7 +77,7 @@ public abstract class DayBase
 
         try
         {
-            var secretsJson = await File.ReadAllTextAsync("./Resources/secrets.json");
+            var secretsJson = await File.ReadAllTextAsync("./secrets.json");
             var secrets = JsonSerializer.Deserialize<Dictionary<string, string>>(secretsJson);
 
             var session = secrets!.GetValueOrDefault("aoc_session_cookie");

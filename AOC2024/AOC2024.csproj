@@ -11,7 +11,7 @@
       <None Update="Secrets\secrets.json">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
-      <None Update="Resources\secrets.json">
+      <None Update="secrets.json">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
     </ItemGroup>
