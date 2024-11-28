@@ -1,6 +1,6 @@
 ﻿namespace AOCHelper;
 
-public static class AOCUtils
+public static class AOC_Utils
 {
     public static IEnumerable<string> SplitLines(string input)
     {

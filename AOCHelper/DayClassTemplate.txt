@@ -2,16 +2,16 @@
 
 namespace {0};
 
-public class Day{1}(int year) : DayBase(year, {2})
+public class Day{1}(int year) : AOC_DayBase(year, {2})
 {{
     protected override void SolveA_Internal(string input)
     {{
-        Console.WriteLine("Solving A!");
+        AOC_Logger.Display("Solving A!");
     }}
 
     protected override void SolveB_Internal(string input)
     {{
-        Console.WriteLine("Solving B!");
+        AOC_Logger.Display("Solving B!");
     }}
 
     protected override string TestInput => "";
