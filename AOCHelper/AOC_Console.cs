@@ -18,6 +18,8 @@ public class AOC_Console
 
     public void Run()
     {
+        AOC_Logger.logLevel = _settings.LogLevel;
+        
         PrintTitleAndInfo(_settings.Year);
 
         var shouldExit = false;
@@ -103,11 +105,21 @@ public class AOC_Console
 
         var daysToCreate = new List<int>();
 
-        foreach (var arg in args)
+        if (args[0].Equals("all", StringComparison.InvariantCultureIgnoreCase))
         {
-            if (int.TryParse(arg, out var day))
+            for (var day = 1; day <= 25; day++)
             {
                 daysToCreate.Add(day);
+            }
+        }
+        else
+        {
+            foreach (var arg in args)
+            {
+                if (int.TryParse(arg, out var day))
+                {
+                    daysToCreate.Add(day);
+                }
             }
         }
 
@@ -195,7 +207,7 @@ public class AOC_Console
         switch (command)
         {
             case eCommand.create:
-                AOC_Logger.Display("Usage: create {day}");
+                AOC_Logger.Display("Usage: create {day}|all");
                 break;
             case eCommand.run:
                 AOC_Logger.Display("Usage: run {day}{a|b|ab}");

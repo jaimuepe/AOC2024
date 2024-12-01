@@ -79,7 +79,7 @@ public abstract class AOC_DayBase
     private void TestB(string testInput)
     {
         AOC_Logger.Info($"\n--- AOC {_year} DAY {_day:00} B (TEST) ---\n");
-        SolveA_Internal(testInput);
+        SolveB_Internal(testInput);
     }
 
     protected abstract void SolveA_Internal(string input);
