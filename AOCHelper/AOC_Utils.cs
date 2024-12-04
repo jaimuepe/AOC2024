@@ -16,7 +16,7 @@ public static class AOC_Utils
     public static List<T> RemoveOneItem<T>(List<T> list, int index)
     {
         // https://stackoverflow.com/a/41958908
-        
+
         var listCount = list.Count;
 
         // Create an array to store the data.
@@ -29,6 +29,24 @@ public static class AOC_Utils
         list.CopyTo(index + 1, result, index, listCount - 1 - index);
 
         return [..result];
+    }
+
+    public static char[][] ParseAsCharMatrix(string input)
+    {
+        var lines = AOC_Utils
+            .SplitLines(input)
+            .ToList();
+
+        var rowCount = lines.Count;
+
+        var matrix = new char[rowCount][];
+
+        for (var i = 0; i < lines.Count; i++)
+        {
+            matrix[i] = lines[i].ToCharArray();
+        }
+
+        return matrix;
     }
 
     public static List<List<int>> ParseAsIntMatrix(string input, string separator = " ")
