@@ -12,23 +12,23 @@ public abstract class AOC_DayBase
         PartTwo = 1 << 1,
     }
 
-    private readonly int _year;
-    private readonly int _day;
+    public readonly int year;
+    public readonly int day;
 
     protected abstract string TestInput { get; }
 
     protected AOC_DayBase(int year, int day)
     {
-        _year = year;
-        _day = day;
+        this.year = year;
+        this.day = day;
     }
 
     public void Solve(eDayPart part)
     {
-        var input = InputCache.GetInput(_year, _day);
+        var input = InputCache.GetInput(year, day);
         if (input == null)
         {
-            AOC_Logger.Error($"Could not retrieve input for year = {_year} and day = {_day}!");
+            AOC_Logger.Error($"Could not retrieve input for year = {year} and day = {day}!");
             return;
         }
 
@@ -45,13 +45,13 @@ public abstract class AOC_DayBase
 
     private void SolveA(string input)
     {
-        AOC_Logger.Info($"\n--- AOC {_year} DAY {_day:00} A ---\n");
+        AOC_Logger.Info($"\n--- AOC {year} DAY {day:00} A ---\n");
         SolveA_Internal(input);
     }
 
     private void SolveB(string input)
     {
-        AOC_Logger.Info($"\n--- AOC {_year} DAY {_day:00} B ---\n");
+        AOC_Logger.Info($"\n--- AOC {year} DAY {day:00} B ---\n");
         SolveB_Internal(input);
     }
 
@@ -72,13 +72,13 @@ public abstract class AOC_DayBase
 
     private void TestA(string testInput)
     {
-        AOC_Logger.Info($"\n--- AOC {_year} DAY {_day:00} A (TEST) ---\n");
+        AOC_Logger.Info($"\n--- AOC {year} DAY {day:00} A (TEST) ---\n");
         SolveA_Internal(testInput);
     }
 
     private void TestB(string testInput)
     {
-        AOC_Logger.Info($"\n--- AOC {_year} DAY {_day:00} B (TEST) ---\n");
+        AOC_Logger.Info($"\n--- AOC {year} DAY {day:00} B (TEST) ---\n");
         SolveB_Internal(testInput);
     }
 

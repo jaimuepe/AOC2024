@@ -4,6 +4,8 @@ public static class AOC_Logger
 {
     public static eLogLevel logLevel;
 
+    public static bool enabled = true;
+    
     public enum eLogLevel
     {
         Debug,
@@ -14,11 +16,13 @@ public static class AOC_Logger
     
     public static void Display(string text = "")
     {
+        if (!enabled) return;
         Console.WriteLine(text);
     }
 
     public static void Debug(string text = "")
     {
+        if (!enabled) return;
         if (logLevel > eLogLevel.Debug) return;
 
         Console.ForegroundColor = ConsoleColor.Cyan;
@@ -28,6 +32,7 @@ public static class AOC_Logger
 
     public static void Info(string text = "")
     {
+        if (!enabled) return;
         if (logLevel > eLogLevel.Info) return;
 
         Console.ForegroundColor = ConsoleColor.Yellow;
@@ -37,6 +42,7 @@ public static class AOC_Logger
 
     public static void Error(string text = "")
     {
+        if (!enabled) return;
         if (logLevel > eLogLevel.Error) return;
 
         Console.ForegroundColor = ConsoleColor.Red;

@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Diagnostics;
+using System.Text.RegularExpressions;
 using AOCHelper.@internal;
 
 namespace AOCHelper;
@@ -12,6 +13,7 @@ public class AOC_Console
         create,
         run,
         test,
+        benchmark,
     }
 
     private readonly Settings _settings = new();
@@ -19,7 +21,7 @@ public class AOC_Console
     public void Run()
     {
         AOC_Logger.logLevel = _settings.LogLevel;
-        
+
         PrintTitleAndInfo(_settings.Year);
 
         var shouldExit = false;
@@ -69,6 +71,9 @@ public class AOC_Console
                     break;
                 case eCommand.test:
                     HandleTestCommand(args);
+                    break;
+                case eCommand.benchmark:
+                    HandleBenchmarkCommand(args);
                     break;
                 default:
                     AOC_Logger.Error($"Unhandled command {command}!");
@@ -170,6 +175,101 @@ public class AOC_Console
         }
 
         day.Solve(tuple.Value.Item2);
+    }
+
+    private void HandleBenchmarkCommand(string[] args)
+    {
+        if (args.Length == 0)
+        {
+            PrintUsage(eCommand.benchmark);
+            return;
+        }
+
+        var tuple = ParseDayAndParts(args[0]);
+        if (tuple == null)
+        {
+            PrintUsage(eCommand.benchmark);
+            return;
+        }
+
+        var runs = 100;
+        if (args.Length > 1 &&
+            int.TryParse(args[1], out var val))
+        {
+            runs = val;
+        }
+
+        var dayNum = tuple.Value.Item1;
+
+        var day = DayFactory.Create(
+            _settings.Year,
+            dayNum);
+
+        var daysToRun = tuple.Value.Item2;
+
+        // pre warm
+        AOC_Logger.enabled = false;
+        day.Solve(daysToRun);
+        AOC_Logger.enabled = true;
+
+        if (daysToRun.HasFlag(AOC_DayBase.eDayPart.PartOne))
+        {
+            Benchmark(day, AOC_DayBase.eDayPart.PartOne, runs);
+        }
+
+        if (daysToRun.HasFlag(AOC_DayBase.eDayPart.PartTwo))
+        {
+            Benchmark(day, AOC_DayBase.eDayPart.PartTwo, runs);
+        }
+    }
+
+    private void Benchmark(
+        AOC_DayBase day,
+        AOC_DayBase.eDayPart part,
+        int runs)
+    {
+        var sw = new Stopwatch();
+
+        var min = TimeSpan.MaxValue;
+        var max = TimeSpan.MinValue;
+        var total = TimeSpan.Zero;
+
+        AOC_Logger.Display();
+        AOC_Logger.Display($"--- BENCHMARK --- ");
+        
+        if (part == AOC_DayBase.eDayPart.PartOne)
+        {
+            AOC_Logger.Display($"--- DAY {day.day:00} Part A --- ");
+        }
+        else
+        {
+            AOC_Logger.Display($"--- DAY {day.day:00} Part B --- ");
+        }
+
+        AOC_Logger.Display($"Running {runs} times...");
+
+        AOC_Logger.enabled = false;
+
+        for (var i = 0; i < runs; i++)
+        {
+            sw.Restart();
+            day.Solve(part);
+            sw.Stop();
+
+            var elapsed = sw.Elapsed;
+            total += elapsed;
+            if (elapsed < min) min = elapsed;
+            if (elapsed > max) max = elapsed;
+        }
+
+        var avg = total / runs;
+
+        AOC_Logger.enabled = true;
+
+        AOC_Logger.Display($"Results:");
+        AOC_Logger.Display($"Min: {min.TotalMilliseconds} ms");
+        AOC_Logger.Display($"Max: {max.TotalMilliseconds} ms");
+        AOC_Logger.Display($"Avg: {avg.TotalMilliseconds} ms");
     }
 
     private void HandleTestCommand(string[] args)
