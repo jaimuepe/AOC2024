@@ -73,12 +73,12 @@ public class Day04(int year) : AOC_DayBase(year, 4)
 
                     var found = false;
 
-                    foreach (var axis in oppositeDirections)
+                    foreach (var oppositeDir in oppositeDirections)
                     {
-                        var x = j + dir.X - axis.X;
-                        var y = i + dir.Y - axis.Y;
+                        var x = j + dir.X - oppositeDir.X;
+                        var y = i + dir.Y - oppositeDir.Y;
 
-                        if (FindWord(matrix, word, x, y, axis))
+                        if (FindWord(matrix, word, x, y, oppositeDir))
                         {
                             found = true;
                             break;
