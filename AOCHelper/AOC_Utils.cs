@@ -69,4 +69,42 @@ public static class AOC_Utils
 
         return outerList;
     }
+    
+    public static T[][] CreateMatrix<T>(int height, int width)
+    {
+        var matrix = new T[height][];
+        
+        for (var i = 0; i < height; i++)
+        {
+            matrix[i] = new T[width];
+        }
+
+        return matrix;
+    }
+
+    public static T[][] CreateMatrixWithDefaultValue<T>(int height, int width, T defaultValue)
+    {
+        var matrix = new T[height][];
+        
+        for (var i = 0; i < height; i++)
+        {
+            matrix[i] = new T[width];
+            Array.Fill(matrix[i], defaultValue);
+        }
+
+        return matrix;
+    }
+
+    public static void Clear<T>(T[] array, T clearValue)
+    {
+        Array.Fill(array, clearValue);
+    }
+
+    public static void Clear<T>(T[][] array, T clearValue)
+    {
+        for (var i = 0; i < array.Length; i++)
+        {
+            Array.Fill(array[i], clearValue);
+        }
+    }
 }

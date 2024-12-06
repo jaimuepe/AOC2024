@@ -27,6 +27,7 @@ internal class Update
 
 internal class Rules
 {
+    // according to my benchmarks using lists is faster than using sets in this case
     private readonly List<int>?[] _rules = new List<int>?[100];
 
     public void AddRule(int left, int right)
