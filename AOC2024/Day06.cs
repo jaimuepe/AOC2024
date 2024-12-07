@@ -165,7 +165,7 @@ public class Day06(int year) : AOC_DayBase(year, 6)
 
                 var directionBit = DirectionIndexToBitFlag(guard.DirectionIndex);
 
-                if (directionsMap[y][x].HasFlag(directionBit))
+                if ((directionsMap[y][x] & directionBit) > 0)
                 {
                     // loop detected!
                     foundLoop = true;

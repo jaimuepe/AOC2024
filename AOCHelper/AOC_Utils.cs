@@ -107,4 +107,31 @@ public static class AOC_Utils
             Array.Fill(array[i], clearValue);
         }
     }
+
+    public static IEnumerable<List<T>> GetPermutations<T>(
+        int size,
+        T[] values) => GetPermutations([], size, values);
+
+    private static IEnumerable<List<T>> GetPermutations<T>(
+        List<T> list, 
+        int size,
+        T[] values)
+    {
+        foreach( var op in values)
+        {
+            var copy = new List<T>(list) { op };
+
+            if (copy.Count == size)
+            {
+                yield return copy;
+            }
+            else
+            {
+                foreach (var permutation in GetPermutations(copy, size, values))
+                {
+                    yield return permutation;
+                }
+            }
+        }
+    }
 }
