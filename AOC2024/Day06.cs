@@ -25,12 +25,6 @@ public class Day06(int year) : AOC_DayBase(year, 6)
 
         public void RemoveObstacle(Vector2i position) => _obstacles[position.Y][position.X] = false;
 
-        public bool IsInsideMap(Vector2i position)
-        {
-            return position.X >= 0 && position.X < Width &&
-                   position.Y >= 0 && position.Y < Height;
-        }
-
         public bool IsBlocked(Vector2i position)
         {
             return _obstacles[position.Y][position.X];
@@ -72,7 +66,7 @@ public class Day06(int year) : AOC_DayBase(year, 6)
         public eMoveResult Move(Map map)
         {
             var nextGuardPosition = Position + Direction;
-            if (!map.IsInsideMap(nextGuardPosition)) return eMoveResult.OutsideMap;
+            if (!AOC_Utils.IsInsideBounds(nextGuardPosition, map.Width, map.Height)) return eMoveResult.OutsideMap;
 
             if (map.IsBlocked(nextGuardPosition))
             {

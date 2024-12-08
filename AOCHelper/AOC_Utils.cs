@@ -1,4 +1,7 @@
-﻿namespace AOCHelper;
+﻿using System.Numerics;
+using AOCHelper.Math;
+
+namespace AOCHelper;
 
 public static class AOC_Utils
 {
@@ -99,7 +102,7 @@ public static class AOC_Utils
     {
         Array.Fill(array, clearValue);
     }
-
+    
     public static void Clear<T>(T[][] array, T clearValue)
     {
         for (var i = 0; i < array.Length; i++)
@@ -133,5 +136,10 @@ public static class AOC_Utils
                 }
             }
         }
+    }
+
+    public static bool IsInsideBounds(Vector2i vec, int width, int height)
+    {        
+        return vec.X >= 0 && vec.X < width && vec.Y >= 0 && vec.Y < height;
     }
 }
