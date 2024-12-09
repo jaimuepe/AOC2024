@@ -7,9 +7,9 @@ public class Day09(int year) : AOC_DayBase(year, 9)
 {
     private class MemoryBlock
     {
-        public bool IsFile { get; init; }
+        public bool IsFile => FileId != -1;
 
-        public int FileId { get; init; }
+        public int FileId { get; set; }
 
         public int Size { get; set; }
     }
@@ -18,144 +18,121 @@ public class Day09(int year) : AOC_DayBase(year, 9)
     {
         var diskMap = Parse(input);
 
-        // PrintMemoryMap(diskMap);
-
         while (true)
         {
-            var movedAnyBlock = false;
+            var emptyBlockIdx = diskMap.FindIndex(block => !block.IsFile);
 
-            // find an empty block & try to move any file block
-            for (var i = 0; i < diskMap.Count; i++)
-            {
-                if (diskMap[i].IsFile) continue;
-                var emptyBlock = diskMap[i];
-                
-                for (var j = diskMap.Count - 1; j > i; j--)
-                {
-                    if (!diskMap[j].IsFile) continue;
-                    var dataBlock = diskMap[j];
-                    
-                    var blocksToMove = Math.Min(emptyBlock.Size, dataBlock.Size);
-                    
-                    diskMap.Insert(j + 1, new MemoryBlock
-                    {
-                        IsFile = false,
-                        FileId = -1,
-                        Size = blocksToMove,
-                    });
-                    
-                    dataBlock.Size -= blocksToMove;
-                    if (dataBlock.Size == 0) diskMap.RemoveAt(j);
+            if (emptyBlockIdx == -1) break;
 
-                    emptyBlock.Size -= blocksToMove;
-                    if (emptyBlock.Size == 0) diskMap.RemoveAt(i);
+            var dataBlockIdx = diskMap.FindLastIndex(
+                diskMap.Count - 1,
+                diskMap.Count - 1 - emptyBlockIdx,
+                (block) => block.IsFile);
 
-                    diskMap.Insert(i, new MemoryBlock
-                    {
-                        FileId = dataBlock.FileId,
-                        IsFile = true,
-                        Size = blocksToMove,
-                    });
+            if (dataBlockIdx == -1) break;
 
-                    movedAnyBlock = true;
-                    break;
-                }
+            var emptyBlock = diskMap[emptyBlockIdx];
+            var dataBlock = diskMap[dataBlockIdx];
 
-                if (movedAnyBlock) break;
-            }
+            var blocksToMove = Math.Min(emptyBlock.Size, dataBlock.Size);
 
-            if (movedAnyBlock)
-            {
-                // PrintMemoryMap(diskMap);
-            }
-            else
-            {
-                break;
-            }
+            MoveMemory(diskMap, dataBlockIdx, emptyBlockIdx, blocksToMove);
         }
-
-        // PrintMemoryMap(diskMap);
 
         var checksum = CalculateChecksum(diskMap);
         AOC_Logger.Display("Checksum: " + checksum);
     }
-    
+
     protected override void SolveB_Internal(string input)
     {
         var diskMap = Parse(input);
 
-        // PrintMemoryMap(diskMap);
-        
-        var movedFiles = new HashSet<int>();
-        
-        while (true)
+        var filesToMove = new List<MemoryBlock>();
+        for (var i = diskMap.Count - 1; i >= 0; i--)
         {
-            var movedAnyBlock = false;
-
-            // find an empty block & try to move any file block
-            for (var i = 0; i < diskMap.Count; i++)
-            {
-                if (diskMap[i].IsFile) continue;
-                
-                var emptyBlock = diskMap[i];
-
-                for (var j = diskMap.Count - 1; j > i; j--)
-                {
-                    if (!diskMap[j].IsFile) continue;
-                    
-                    var dataBlock = diskMap[j];
-
-                    if (movedFiles.Contains(dataBlock.FileId)) continue;
-                    
-                    // block does not fit!
-                    if (dataBlock.Size > emptyBlock.Size) continue;
-
-                    movedFiles.Add(dataBlock.FileId);
-                    
-                    var blocksToMove = dataBlock.Size;
-                   
-                    diskMap.Insert(j + 1, new MemoryBlock
-                    {
-                        IsFile = false,
-                        FileId = -1,
-                        Size = blocksToMove,
-                    });
-                    
-                    diskMap.RemoveAt(j);
-
-                    emptyBlock.Size -= blocksToMove;
-                    if (emptyBlock.Size == 0) diskMap.RemoveAt(i);
-
-                    diskMap.Insert(i, dataBlock);
-
-                    movedAnyBlock = true;
-                    break;
-                }
-
-                if (movedAnyBlock) break;
-            }
-
-            if (movedAnyBlock)
-            {
-                // PrintMemoryMap(diskMap);
-            }
-            else
-            {
-                break;
-            }
+            if (diskMap[i].IsFile) filesToMove.Add(diskMap[i]);
         }
-        
-        // PrintMemoryMap(diskMap);
-        
+
+        foreach (var fileToMove in filesToMove)
+        {
+            var blockIdx = diskMap.IndexOf(fileToMove);
+
+            var emptyIdx = diskMap
+                .FindIndex(
+                    0,
+                    blockIdx,
+                    block => !block.IsFile && block.Size >= fileToMove.Size);
+
+            if (emptyIdx == -1) continue;
+
+            MoveMemory(diskMap, blockIdx, emptyIdx, fileToMove.Size);
+        }
+
         var checksum = CalculateChecksum(diskMap);
         AOC_Logger.Display("Checksum: " + checksum);
+    }
+
+    private static void MoveMemory(
+        List<MemoryBlock> memory,
+        int sourceIdx,
+        int targetIdx,
+        int size)
+    {
+        var sourceBlock = memory[sourceIdx];
+        var targetBlock = memory[targetIdx];
+
+        var prevIsEmpty = sourceIdx > 0 && !memory[sourceIdx - 1].IsFile;
+        var nextIsEmpty = sourceIdx < memory.Count - 1 && !memory[sourceIdx + 1].IsFile;
+
+        var blockIsFullyMoved = size == sourceBlock.Size;
+
+        if (blockIsFullyMoved && prevIsEmpty && nextIsEmpty)
+        {
+            memory[sourceIdx - 1].Size += size + memory[sourceIdx + 1].Size;
+            memory.RemoveAt(sourceIdx + 1);
+        }
+        else if (nextIsEmpty)
+        {
+            memory[sourceIdx + 1].Size += size;
+        }
+        else if (prevIsEmpty)
+        {
+            memory[sourceIdx - 1].Size += size;
+        }
+        else
+        {
+            memory.Insert(sourceIdx + 1, new MemoryBlock
+            {
+                FileId = -1,
+                Size = size,
+            });
+        }
+
+        sourceBlock.Size -= size;
+        if (sourceBlock.Size == 0) memory.RemoveAt(sourceIdx);
+
+        if (targetBlock.Size == size)
+        {
+            targetBlock.FileId = sourceBlock.FileId;
+        }
+        else
+        {
+            targetBlock.Size -= size;
+            if (targetBlock.Size == 0) memory.RemoveAt(targetIdx);
+
+            memory.Insert(targetIdx, new MemoryBlock
+            {
+                FileId = sourceBlock.FileId,
+                Size = size,
+            });
+        }
     }
 
     private static long CalculateChecksum(List<MemoryBlock> diskMap)
     {
         var checksum = 0L;
         var pos = 0;
-        
+
         for (var i = 0; i < diskMap.Count; i++)
         {
             var block = diskMap[i];
@@ -176,14 +153,14 @@ public class Day09(int year) : AOC_DayBase(year, 9)
 
         return checksum;
     }
-    
+
     private static void PrintMemoryMap(List<MemoryBlock> memory)
     {
         var sb = new StringBuilder();
 
         foreach (var block in memory)
         {
-            var c = block.IsFile ? (char) (block.FileId + '0') : '.';
+            var c = block.IsFile ? (char)(block.FileId + '0') : '.';
 
             for (var i = 0; i < block.Size; i++)
             {
@@ -207,12 +184,14 @@ public class Day09(int year) : AOC_DayBase(year, 9)
 
             var id = isFile ? fileIdx++ : -1;
 
-            diskMap.Add(new MemoryBlock
+            if (isFile || size > 0)
             {
-                FileId = id,
-                IsFile = isFile,
-                Size = size,
-            });
+                diskMap.Add(new MemoryBlock
+                {
+                    FileId = id,
+                    Size = size,
+                });
+            }
 
             isFile = !isFile;
         }
