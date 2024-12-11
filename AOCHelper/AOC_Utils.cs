@@ -64,21 +64,41 @@ public static class AOC_Utils
         return matrix;
     }
 
+    public static List<long> ParseAsLongList(string input, string separator = " ")
+    {
+        var tokens = input.Split(separator);
+
+        var list = new List<long>(tokens.Length);
+
+        foreach (var tok in tokens)
+        {
+            list.Add(long.Parse(tok));
+        }
+
+        return list;
+    }
+
+    public static List<int> ParseAsIntList(string input, string separator = " ")
+    {
+        var tokens = input.Split(separator);
+
+        var list = new List<int>(tokens.Length);
+
+        foreach (var tok in tokens)
+        {
+            list.Add(int.Parse(tok));
+        }
+
+        return list;
+    }
+
     public static List<List<int>> ParseAsIntMatrixList(string input, string separator = " ")
     {
         var outerList = new List<List<int>>();
 
         foreach (var line in SplitLines(input))
         {
-            var tokens = line.Split(separator);
-
-            var innerList = new List<int>();
-
-            foreach (var tok in tokens)
-            {
-                innerList.Add(int.Parse(tok));
-            }
-
+            var innerList = ParseAsIntList(line);
             outerList.Add(innerList);
         }
 
@@ -193,14 +213,52 @@ public static class AOC_Utils
     {
         var x = pos.X;
         var y = pos.Y;
-        
+
         var height = grid.Length;
         var width = grid[0].Length;
 
         if (x > 0) yield return grid[y][x - 1];
         if (x < width - 1) yield return grid[y][x + 1];
-        
+
         if (y > 0) yield return grid[y - 1][x];
         if (y < height - 1) yield return grid[y + 1][x];
+    }
+
+    public static int GetNumberOfDigits(long n)
+    {
+        return n switch
+        {
+            < 10L => 1,
+            < 100L => 2,
+            < 1000L => 3,
+            < 10000L => 4,
+            < 100000L => 5,
+            < 1000000L => 6,
+            _ => 1 + (int)System.Math.Floor(System.Math.Log10(n))
+        };
+    }
+
+    public static int GetNumberOfDigits(int n)
+    {
+        return n switch
+        {
+            < 10 => 1,
+            < 100 => 2,
+            < 1000 => 3,
+            < 10000 => 4,
+            < 100000 => 5,
+            < 1000000 => 6,
+            _ => 1 + (int)System.Math.Floor(System.Math.Log10(n))
+        };
+    }
+
+    public static long Pow10(int n)
+    {
+        if (n == 0) return 1L;
+
+        var result = 10L;
+        for (var i = 1; i < n; ++i) result *= 10L;
+
+        return result;
     }
 }
