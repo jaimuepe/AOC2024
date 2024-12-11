@@ -1,4 +1,4 @@
-﻿using System.Numerics;
+﻿using System.Text;
 using AOCHelper.Math;
 
 namespace AOCHelper;
@@ -34,25 +34,37 @@ public static class AOC_Utils
         return [..result];
     }
 
-    public static char[][] ParseAsCharMatrix(string input)
+    public static char[][] ParseAsCharMatrix(string input) =>
+        ParseAsMatrix(input, (_, _, c) => c);
+
+    public static int[][] ParseAsIntMatrix(string input) =>
+        ParseAsMatrix(input, (_, _, c) => c - '0');
+
+    public static T[][] ParseAsMatrix<T>(
+        string input,
+        Func<int, int, char, T> mapperFcn)
     {
-        var lines = AOC_Utils
-            .SplitLines(input)
+        var lines = SplitLines(input)
             .ToList();
 
-        var rowCount = lines.Count;
+        var height = lines.Count;
+        var width = lines[0].Length;
 
-        var matrix = new char[rowCount][];
+        var matrix = new T[height][];
 
-        for (var i = 0; i < lines.Count; i++)
+        for (var i = 0; i < height; i++)
         {
-            matrix[i] = lines[i].ToCharArray();
+            matrix[i] = new T[width];
+            for (var j = 0; j < width; j++)
+            {
+                matrix[i][j] = mapperFcn(j, i, lines[i][j]);
+            }
         }
 
         return matrix;
     }
 
-    public static List<List<int>> ParseAsIntMatrix(string input, string separator = " ")
+    public static List<List<int>> ParseAsIntMatrixList(string input, string separator = " ")
     {
         var outerList = new List<List<int>>();
 
@@ -72,11 +84,11 @@ public static class AOC_Utils
 
         return outerList;
     }
-    
+
     public static T[][] CreateMatrix<T>(int height, int width)
     {
         var matrix = new T[height][];
-        
+
         for (var i = 0; i < height; i++)
         {
             matrix[i] = new T[width];
@@ -88,7 +100,7 @@ public static class AOC_Utils
     public static T[][] CreateMatrixWithDefaultValue<T>(int height, int width, T defaultValue)
     {
         var matrix = new T[height][];
-        
+
         for (var i = 0; i < height; i++)
         {
             matrix[i] = new T[width];
@@ -98,11 +110,45 @@ public static class AOC_Utils
         return matrix;
     }
 
+    public static void PrintMatrix(char[][] matrix)
+    {
+        var sb = new StringBuilder();
+
+        for (var i = 0; i < matrix.Length; i++)
+        {
+            for (var j = 0; j < matrix[i].Length; j++)
+            {
+                sb.Append(matrix[i][j]);
+            }
+
+            sb.AppendLine();
+        }
+
+        AOC_Logger.Display(sb.ToString());
+    }
+
+    public static void PrintMatrix<T>(T[][] matrix, Func<T, string> toStringFcn)
+    {
+        var sb = new StringBuilder();
+
+        for (var i = 0; i < matrix.Length; i++)
+        {
+            for (var j = 0; j < matrix[i].Length; j++)
+            {
+                sb.Append(toStringFcn(matrix[i][j]));
+            }
+
+            sb.AppendLine();
+        }
+
+        AOC_Logger.Display(sb.ToString());
+    }
+
     public static void Clear<T>(T[] array, T clearValue)
     {
         Array.Fill(array, clearValue);
     }
-    
+
     public static void Clear<T>(T[][] array, T clearValue)
     {
         for (var i = 0; i < array.Length; i++)
@@ -116,11 +162,11 @@ public static class AOC_Utils
         T[] values) => GetPermutations([], size, values);
 
     private static IEnumerable<List<T>> GetPermutations<T>(
-        List<T> list, 
+        List<T> list,
         int size,
         T[] values)
     {
-        foreach( var op in values)
+        foreach (var op in values)
         {
             var copy = new List<T>(list) { op };
 
@@ -139,7 +185,22 @@ public static class AOC_Utils
     }
 
     public static bool IsInsideBounds(Vector2i vec, int width, int height)
-    {        
+    {
         return vec.X >= 0 && vec.X < width && vec.Y >= 0 && vec.Y < height;
+    }
+
+    public static IEnumerable<T> GetNeighbors<T>(T[][] grid, Vector2i pos)
+    {
+        var x = pos.X;
+        var y = pos.Y;
+        
+        var height = grid.Length;
+        var width = grid[0].Length;
+
+        if (x > 0) yield return grid[y][x - 1];
+        if (x < width - 1) yield return grid[y][x + 1];
+        
+        if (y > 0) yield return grid[y - 1][x];
+        if (y < height - 1) yield return grid[y + 1][x];
     }
 }

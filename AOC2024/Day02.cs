@@ -6,7 +6,7 @@ public class Day02(int year) : AOC_DayBase(year, 2)
 {
     protected override void SolveA_Internal(string input)
     {
-        var reports = AOC_Utils.ParseAsIntMatrix(input);
+        var reports = AOC_Utils.ParseAsIntMatrixList(input);
 
         var safeReports = reports
             .Count(report => IsSafeReport(report));
@@ -16,7 +16,7 @@ public class Day02(int year) : AOC_DayBase(year, 2)
 
     protected override void SolveB_Internal(string input)
     {
-        var reports = AOC_Utils.ParseAsIntMatrix(input);
+        var reports = AOC_Utils.ParseAsIntMatrixList(input);
 
         var safeReports = 0;
 

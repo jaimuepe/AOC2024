@@ -29,6 +29,28 @@ public struct Vector2i : IEquatable<Vector2i>
 
     public static Vector2i operator -(Vector2i a, Vector2i b) => a + -b;
 
+    public static bool operator ==(Vector2i a, Vector2i b) => a.Equals(b);
+
+    public static bool operator !=(Vector2i a, Vector2i b) => !(a == b);
+
+    public static Vector2i RotateRight(Vector2i vec)
+    {
+        // (1, 0) -> (0, -1)
+        // (0, 1) -> (1, 0)
+        // (-1, 0) -> (0, 1)
+        // (0, -1) -> (-1, 0)
+        return new Vector2i(vec.Y, -vec.X);
+    }
+    
+    public static Vector2i RotateLeft(Vector2i vec)
+    {
+        // (1, 0) -> (0, 1)
+        // (0, 1) -> (-1, 0)
+        // (-1, 0) -> (0, -1)
+        // (0, -1) -> (1, 0)
+        return new Vector2i(-vec.Y, vec.X);
+    }
+    
     public override string ToString()
     {
         return "(" + X + ", " + Y + ")";
