@@ -61,25 +61,6 @@ public class Day12(int year) : AOC_DayBase(year, 12)
         var sides = AOC_Utils.CreateMatrix<eSideBitFlags>(height, width);
 
         var result = 0L;
-        
-        for (var i = 0; i < height; i++)
-        {
-            for (var j = 0; j < width; j++)
-            {
-                var plant = map[i][j];
-            
-                foreach (var dir in _directions)
-                {
-                    var neighbor = new Vector2i(j, i) + dir;
-                    
-                    if (!AOC_Utils.IsInsideBounds(neighbor, width, height) || 
-                        map[neighbor.Y][neighbor.X] != plant)
-                    {
-                        sides[i][j] |= DirectionToSideEnum(dir);    
-                    }
-                }
-            }
-        }
 
         for (var i = 0; i < height; i++)
         {
@@ -92,10 +73,10 @@ public class Day12(int year) : AOC_DayBase(year, 12)
                 {
                     Plant = map[i][j],
                 };
+                
+                FloodFill_B(plot, new Vector2i(j, i), map, visitedCells, sides);
 
-                FloodFill_B(plot, new Vector2i(j, i), map, visitedCells);
-
-                result += plot.Area * plot.Perimeter;
+                result += plot.Area * plot.Sides;
             }
         }
 
@@ -136,7 +117,8 @@ public class Day12(int year) : AOC_DayBase(year, 12)
         GardenPlot plot,
         Vector2i cellCoords,
         char[][] map,
-        bool[][] visitedCells)
+        bool[][] visitedCells,
+        eSideBitFlags[][] sides)
     {
         var height = map.Length;
         var width = map[0].Length;
@@ -153,11 +135,60 @@ public class Day12(int year) : AOC_DayBase(year, 12)
                 if (visitedCells[next.Y][next.X]) continue;
                 visitedCells[next.Y][next.X] = true;
                 
-                FloodFill_B(plot, next, map, visitedCells);
+                FloodFill_B(plot, next, map, visitedCells, sides);
             }
             else
             {
-                plot.Perimeter++;
+                var dirBitFlags = DirectionToSideEnum(direction);
+                
+                var oppositeAxes = new[]
+                {
+                    Vector2i.RotateLeft(direction),
+                    Vector2i.RotateRight(direction),
+                };
+
+                if (sides[cellCoords.Y][cellCoords.X].HasFlag(dirBitFlags)) continue;
+                
+                var alreadyCounted = false;
+
+                sides[cellCoords.Y][cellCoords.X] |= dirBitFlags;
+                
+                foreach (var axis in oppositeAxes)
+                {
+                    var p = cellCoords + axis;
+
+                    while (true)
+                    {
+                        if (!AOC_Utils.IsInsideBounds(p, width, height) || 
+                            map[p.Y][p.X] != plot.Plant)
+                        {
+                            break;
+                        }
+                        
+                        if (sides[p.Y][p.X].HasFlag(dirBitFlags))
+                        {
+                            alreadyCounted = true;
+                        }
+                        else
+                        {
+                            var pp = p + direction;
+                            
+                            if (!AOC_Utils.IsInsideBounds(pp, width, height) ||
+                                map[pp.Y][pp.X] != plot.Plant)
+                            {
+                                sides[p.Y][p.X] |= dirBitFlags;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                        
+                        p += axis;
+                    }
+                }
+
+                if (!alreadyCounted) plot.Sides++;
             }
         }
     }
@@ -190,9 +221,10 @@ public class Day12(int year) : AOC_DayBase(year, 12)
     }
 
     protected override string TestInput => """
-                                           AAAA
-                                           BBCD
-                                           BBCC
-                                           EEEC
+                                           OOOOO
+                                           OXOXO
+                                           OOOOO
+                                           OXOXO
+                                           OOOOO
                                            """;
 }
