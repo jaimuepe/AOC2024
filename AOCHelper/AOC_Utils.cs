@@ -204,10 +204,13 @@ public static class AOC_Utils
         }
     }
 
-    public static bool IsInsideBounds(Vector2i vec, int width, int height)
+    public static bool IsInsideBounds(int x, int y, int width, int height)
     {
-        return vec.X >= 0 && vec.X < width && vec.Y >= 0 && vec.Y < height;
+        return x >= 0 && x < width && y >= 0 && y < height;
     }
+
+    public static bool IsInsideBounds(Vector2i vec, int width, int height) =>
+        IsInsideBounds(vec.X, vec.Y, width, height);
 
     public static IEnumerable<T> GetNeighbors<T>(T[][] grid, Vector2i pos)
     {
