@@ -40,7 +40,7 @@ public class Day12(int year) : AOC_DayBase(year, 12)
                     Plant = map[i][j],
                 };
 
-                FloodFill_A(plot, new Vector2i(j, i), map, visitedCells);
+                FloodFill_A(plot, new Vector2I(j, i), map, visitedCells);
 
                 result += plot.Area * plot.Perimeter;
             }
@@ -58,7 +58,7 @@ public class Day12(int year) : AOC_DayBase(year, 12)
 
         var visitedCells = AOC_Utils.CreateMatrix<bool>(height, width);
 
-        var sides = AOC_Utils.CreateMatrix<eSideBitFlags>(height, width);
+        var sides = AOC_Utils.CreateMatrix<eDirectionBitFlags>(height, width);
 
         var result = 0L;
 
@@ -74,7 +74,7 @@ public class Day12(int year) : AOC_DayBase(year, 12)
                     Plant = map[i][j],
                 };
                 
-                FloodFill_B(plot, new Vector2i(j, i), map, visitedCells, sides);
+                FloodFill_B(plot, new Vector2I(j, i), map, visitedCells, sides);
 
                 result += plot.Area * plot.Sides;
             }
@@ -85,7 +85,7 @@ public class Day12(int year) : AOC_DayBase(year, 12)
 
     private static void FloodFill_A(
         GardenPlot plot,
-        Vector2i cellCoords,
+        Vector2I cellCoords,
         char[][] map,
         bool[][] visitedCells)
     {
@@ -115,10 +115,10 @@ public class Day12(int year) : AOC_DayBase(year, 12)
     
     private static void FloodFill_B(
         GardenPlot plot,
-        Vector2i cellCoords,
+        Vector2I cellCoords,
         char[][] map,
         bool[][] visitedCells,
-        eSideBitFlags[][] sides)
+        eDirectionBitFlags[][] sides)
     {
         var height = map.Length;
         var width = map[0].Length;
@@ -143,8 +143,8 @@ public class Day12(int year) : AOC_DayBase(year, 12)
                 
                 var oppositeAxes = new[]
                 {
-                    Vector2i.RotateLeft(direction),
-                    Vector2i.RotateRight(direction),
+                    Vector2I.RotateLeft(direction),
+                    Vector2I.RotateRight(direction),
                 };
 
                 if (sides[cellCoords.Y][cellCoords.X].HasFlag(dirBitFlags)) continue;
@@ -192,32 +192,21 @@ public class Day12(int year) : AOC_DayBase(year, 12)
             }
         }
     }
-    
 
-    [Flags]
-    private enum eSideBitFlags
-    {
-        None = 0,
-        Top = 1 << 0,
-        Right = 1 << 1,
-        Down = 1 << 2,
-        Left = 1 << 3,
-    }
-
-    private static readonly Vector2i[] _directions =
+    private static readonly Vector2I[] _directions =
     [
-        Vector2i.Up,
-        Vector2i.Right,
-        Vector2i.Down,
-        Vector2i.Left,
+        Vector2I.Up,
+        Vector2I.Right,
+        Vector2I.Down,
+        Vector2I.Left,
     ];
 
-    private static eSideBitFlags DirectionToSideEnum(Vector2i dir)
+    private static eDirectionBitFlags DirectionToSideEnum(Vector2I dir)
     {
-        if (dir == Vector2i.Up) return eSideBitFlags.Top;
-        if (dir == Vector2i.Right) return eSideBitFlags.Right;
-        if (dir == Vector2i.Down) return eSideBitFlags.Down;
-        return eSideBitFlags.Left;
+        if (dir == Vector2I.Up) return eDirectionBitFlags.Up;
+        if (dir == Vector2I.Right) return eDirectionBitFlags.Right;
+        if (dir == Vector2I.Down) return eDirectionBitFlags.Down;
+        return eDirectionBitFlags.Left;
     }
 
     protected override string TestInput => """

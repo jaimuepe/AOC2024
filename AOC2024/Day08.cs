@@ -12,7 +12,7 @@ public class Day08(int year) : AOC_DayBase(year, 8)
             out var width,
             out var height);
 
-        var antinodeLocations = new HashSet<Vector2i>();
+        var antinodeLocations = new HashSet<Vector2I>();
 
         foreach (var (_, antennas) in antennasByFrequency)
         {
@@ -50,7 +50,7 @@ public class Day08(int year) : AOC_DayBase(year, 8)
             out var width,
             out var height);
 
-        var antinodeLocations = new HashSet<Vector2i>();
+        var antinodeLocations = new HashSet<Vector2I>();
 
         foreach (var (_, antennas) in antennasByFrequency)
         {
@@ -84,12 +84,12 @@ public class Day08(int year) : AOC_DayBase(year, 8)
         AOC_Logger.Display("Antinode unique locations: " + antinodeLocations.Count);
     }
 
-    private static Dictionary<char, List<Vector2i>> Parse(
+    private static Dictionary<char, List<Vector2I>> Parse(
         string input, 
         out int width, 
         out int height)
     {
-        var antennasByFrequency = new Dictionary<char, List<Vector2i>>();
+        var antennasByFrequency = new Dictionary<char, List<Vector2I>>();
 
         var lines = AOC_Utils
             .SplitLines(input)
@@ -111,7 +111,7 @@ public class Day08(int year) : AOC_DayBase(year, 8)
                     antennasByFrequency[c] = value;
                 }
 
-                value.Add(new Vector2i(j, i));
+                value.Add(new Vector2I(j, i));
             }
         }
 

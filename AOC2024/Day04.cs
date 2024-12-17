@@ -9,16 +9,16 @@ public class Day04(int year) : AOC_DayBase(year, 4)
     {
         const string word = "XMAS";
 
-        Vector2i[] directions =
+        Vector2I[] directions =
         [
-            new Vector2i(0, 1),
-            new Vector2i(1, 1),
-            new Vector2i(1, 0),
-            new Vector2i(1, -1),
-            new Vector2i(0, -1),
-            new Vector2i(-1, -1),
-            new Vector2i(-1, 0),
-            new Vector2i(-1, 1),
+            new Vector2I(0, 1),
+            new Vector2I(1, 1),
+            new Vector2I(1, 0),
+            new Vector2I(1, -1),
+            new Vector2I(0, -1),
+            new Vector2I(-1, -1),
+            new Vector2I(-1, 0),
+            new Vector2I(-1, 1),
         ];
 
         var matrix = AOC_Utils.ParseAsCharMatrix(input);
@@ -44,16 +44,16 @@ public class Day04(int year) : AOC_DayBase(year, 4)
         const string word = "MAS";
 
         // we only have to search in two directions and then search in the opposite axes
-        Vector2i[] directions =
+        Vector2I[] directions =
         [
-            new Vector2i(1, 1),
-            new Vector2i(-1, -1),
+            new Vector2I(1, 1),
+            new Vector2I(-1, -1),
         ];
 
-        Vector2i[] oppositeDirections =
+        Vector2I[] oppositeDirections =
         [
-            new Vector2i(1, -1),
-            new Vector2i(-1, 1),
+            new Vector2I(1, -1),
+            new Vector2I(-1, 1),
         ];
 
         var matrix = AOC_Utils.ParseAsCharMatrix(input);
@@ -98,7 +98,7 @@ public class Day04(int year) : AOC_DayBase(year, 4)
         string word,
         int x,
         int y,
-        Vector2i[] directions)
+        Vector2I[] directions)
     {
         var count = 0;
 
@@ -115,7 +115,7 @@ public class Day04(int year) : AOC_DayBase(year, 4)
         string word,
         int x,
         int y,
-        Vector2i direction)
+        Vector2I direction)
     {
         var rows = matrix.Length;
         var cols = matrix[0].Length;

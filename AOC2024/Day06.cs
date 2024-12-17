@@ -21,11 +21,11 @@ public class Day06(int year) : AOC_DayBase(year, 6)
             Width = _obstacles[0].Length;
         }
 
-        public void AddObstacle(Vector2i position) => _obstacles[position.Y][position.X] = true;
+        public void AddObstacle(Vector2I position) => _obstacles[position.Y][position.X] = true;
 
-        public void RemoveObstacle(Vector2i position) => _obstacles[position.Y][position.X] = false;
+        public void RemoveObstacle(Vector2I position) => _obstacles[position.Y][position.X] = false;
 
-        public bool IsBlocked(Vector2i position)
+        public bool IsBlocked(Vector2I position)
         {
             return _obstacles[position.Y][position.X];
         }
@@ -33,19 +33,19 @@ public class Day06(int year) : AOC_DayBase(year, 6)
 
     private class Guard
     {
-        private static readonly Vector2i[] DirectionsArray =
+        private static readonly Vector2I[] DirectionsArray =
         [
-            Vector2i.Down,
-            Vector2i.Right,
-            Vector2i.Up,
-            Vector2i.Left,
+            Vector2I.Down,
+            Vector2I.Right,
+            Vector2I.Up,
+            Vector2I.Left,
         ];
 
         public int DirectionIndex { get; private set; }
 
-        public Vector2i Position { get; set; }
+        public Vector2I Position { get; set; }
 
-        public Vector2i Direction
+        public Vector2I Direction
         {
             get => DirectionsArray[DirectionIndex];
             set => DirectionIndex = Array.IndexOf(DirectionsArray, value);
@@ -90,16 +90,6 @@ public class Day06(int year) : AOC_DayBase(year, 6)
         AOC_Logger.Display("Visited positions: " + visitedPositions.Count);
     }
 
-    [Flags]
-    enum eDirectionBitFlags
-    {
-        None = 0,
-        Down = 1 << 0,
-        Right = 1 << 1,
-        Up = 1 << 2,
-        Left = 1 << 3,
-    }
-
     protected override void SolveB_Internal(string input)
     {
         var (map, guard) = Parse(input);
@@ -111,9 +101,9 @@ public class Day06(int year) : AOC_DayBase(year, 6)
         // ignore initial position
         visitedPositions.Remove(initialGuardPosition);
 
-        var visitedPositionsList = new List<Vector2i>(visitedPositions);
+        var visitedPositionsList = new List<Vector2I>(visitedPositions);
 
-        var lastBlockedPosition = new Vector2i();
+        var lastBlockedPosition = new Vector2I();
         var isFirstIteration = true;
 
         var loopsCount = 0;
@@ -126,7 +116,7 @@ public class Day06(int year) : AOC_DayBase(year, 6)
             visitedPositionsList.RemoveAt(0);
             
             guard.Position = initialGuardPosition;
-            guard.Direction = Vector2i.Down;
+            guard.Direction = Vector2I.Down;
 
             if (isFirstIteration)
             {
@@ -199,7 +189,7 @@ public class Day06(int year) : AOC_DayBase(year, 6)
                 var c = lines[i][j];
                 if (c == '^')
                 {
-                    guard.Position = new Vector2i(j, i);
+                    guard.Position = new Vector2I(j, i);
                 }
                 else if (c == '#')
                 {
@@ -212,9 +202,9 @@ public class Day06(int year) : AOC_DayBase(year, 6)
         return (map, guard);
     }
 
-    private static HashSet<Vector2i> GetRoutePositions(Guard guard, Map map)
+    private static HashSet<Vector2I> GetRoutePositions(Guard guard, Map map)
     {
-        var visitedPositions = new HashSet<Vector2i> { guard.Position };
+        var visitedPositions = new HashSet<Vector2I> { guard.Position };
 
         while (true)
         {

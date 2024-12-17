@@ -34,15 +34,18 @@ public static class AOC_Utils
         return [..result];
     }
 
-    public static char[][] ParseAsCharMatrix(string input) =>
-        ParseAsMatrix(input, (_, _, c) => c);
+    public static char[][] ParseAsCharMatrix(
+        string input,
+        Action<int, int, char>? visitorFcn = null) =>
+        ParseAsMatrix(input, (_, _, c) => c, visitorFcn);
 
     public static int[][] ParseAsIntMatrix(string input) =>
         ParseAsMatrix(input, (_, _, c) => c - '0');
 
     public static T[][] ParseAsMatrix<T>(
         string input,
-        Func<int, int, char, T> mapperFcn)
+        Func<int, int, char, T> mapperFcn,
+        Action<int, int, T>? visitorFcn = null)
     {
         var lines = SplitLines(input)
             .ToList();
@@ -57,7 +60,10 @@ public static class AOC_Utils
             matrix[i] = new T[width];
             for (var j = 0; j < width; j++)
             {
-                matrix[i][j] = mapperFcn(j, i, lines[i][j]);
+                var c = lines[i][j];
+                var item = mapperFcn(j, i, lines[i][j]);
+                matrix[i][j] = item;
+                visitorFcn?.Invoke(j, i, item);
             }
         }
 
@@ -105,7 +111,7 @@ public static class AOC_Utils
         return outerList;
     }
 
-    public static T[][] CreateMatrix<T>(int height, int width)
+    public static T?[][] CreateMatrix<T>(int height, int width)
     {
         var matrix = new T[height][];
 
@@ -137,6 +143,40 @@ public static class AOC_Utils
         for (var i = 0; i < matrix.Length; i++)
         {
             for (var j = 0; j < matrix[i].Length; j++)
+            {
+                sb.Append(matrix[i][j]);
+            }
+
+            sb.AppendLine();
+        }
+
+        AOC_Logger.Display(sb.ToString());
+    }
+
+    public static void PrintMatrix(List<char[]> matrix)
+    {
+        var sb = new StringBuilder();
+
+        for (var i = 0; i < matrix.Count; i++)
+        {
+            for (var j = 0; j < matrix[i].Length; j++)
+            {
+                sb.Append(matrix[i][j]);
+            }
+
+            sb.AppendLine();
+        }
+
+        AOC_Logger.Display(sb.ToString());
+    }
+
+    public static void PrintMatrix(List<List<char>> matrix)
+    {
+        var sb = new StringBuilder();
+
+        for (var i = 0; i < matrix.Count; i++)
+        {
+            for (var j = 0; j < matrix[i].Count; j++)
             {
                 sb.Append(matrix[i][j]);
             }
@@ -209,10 +249,10 @@ public static class AOC_Utils
         return x >= 0 && x < width && y >= 0 && y < height;
     }
 
-    public static bool IsInsideBounds(Vector2i vec, int width, int height) =>
+    public static bool IsInsideBounds(Vector2I vec, int width, int height) =>
         IsInsideBounds(vec.X, vec.Y, width, height);
 
-    public static IEnumerable<T> GetNeighbors<T>(T[][] grid, Vector2i pos)
+    public static IEnumerable<T> GetNeighbors<T>(T[][] grid, Vector2I pos)
     {
         var x = pos.X;
         var y = pos.Y;
@@ -263,5 +303,29 @@ public static class AOC_Utils
         for (var i = 1; i < n; ++i) result *= 10L;
 
         return result;
+    }
+
+    public static eDirectionBitFlags VectorToDirectionEnum(Vector2I dir)
+    {
+        if (dir == Vector2I.Up) return eDirectionBitFlags.Up;
+        if (dir == Vector2I.Right) return eDirectionBitFlags.Right;
+        if (dir == Vector2I.Down) return eDirectionBitFlags.Down;
+        return eDirectionBitFlags.Left;
+    }
+
+    public static Vector2I DirectionEnumToVector(eDirectionBitFlags dir)
+    {
+        if (dir == eDirectionBitFlags.Up) return Vector2I.Up;
+        if (dir == eDirectionBitFlags.Right) return Vector2I.Right;
+        if (dir == eDirectionBitFlags.Down) return Vector2I.Down;
+        return Vector2I.Left;
+    }
+    
+    public static int DirectionEnumToIndex(eDirectionBitFlags dir)
+    {
+        if (dir == eDirectionBitFlags.Up) return 0;
+        if (dir == eDirectionBitFlags.Right) return 1;
+        if (dir == eDirectionBitFlags.Down) return 2;
+        return 3;
     }
 }

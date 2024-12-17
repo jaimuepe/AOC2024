@@ -15,6 +15,8 @@ public abstract class AOC_DayBase
     public readonly int year;
     public readonly int day;
 
+    protected bool IsTest { get; private set; }
+    
     protected abstract string TestInput { get; }
 
     protected AOC_DayBase(int year, int day)
@@ -45,12 +47,16 @@ public abstract class AOC_DayBase
 
     private void SolveA(string input)
     {
+        IsTest = false;
+        
         AOC_Logger.Info($"\n--- AOC {year} DAY {day:00} A ---\n");
         SolveA_Internal(input);
     }
 
     private void SolveB(string input)
     {
+        IsTest = false;
+        
         AOC_Logger.Info($"\n--- AOC {year} DAY {day:00} B ---\n");
         SolveB_Internal(input);
     }
@@ -72,12 +78,16 @@ public abstract class AOC_DayBase
 
     private void TestA(string testInput)
     {
+        IsTest = true;
+        
         AOC_Logger.Info($"\n--- AOC {year} DAY {day:00} A (TEST) ---\n");
         SolveA_Internal(testInput);
     }
 
     private void TestB(string testInput)
     {
+        IsTest = true;
+        
         AOC_Logger.Info($"\n--- AOC {year} DAY {day:00} B (TEST) ---\n");
         SolveB_Internal(testInput);
     }

@@ -9,7 +9,7 @@ public class Day10(int year) : AOC_DayBase(year, 10)
     {
         public int Number { get; init; }
 
-        public Vector2i Position { get; init; }
+        public Vector2I Position { get; init; }
     }
 
     protected override void SolveA_Internal(string input)
@@ -126,7 +126,7 @@ public class Day10(int year) : AOC_DayBase(year, 10)
             (x, y, c) => new Node
             {
                 Number = c - '0',
-                Position = new Vector2i(x, y)
+                Position = new Vector2I(x, y)
             });
         return map;
     }
